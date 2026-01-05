@@ -37,9 +37,15 @@
     <contact>
         <exclude body1="mount" body2="F1_L1"/>
         <exclude body1="mount" body2="F2_L1"/>
-        <pair geom1="f1_tip" geom2="f2_tip" condim="6" margin="0.001" gap="0.0" solref="0.0001 1" solimp="0.99 0.999 0.0001 0.5 2"/>
-        <pair geom1="f1_tip" geom2="f2l1" condim="6" margin="0.0001" gap="0.0"/>
-        <pair geom1="f2_tip" geom2="f1l1" condim="6" margin="0.0001" gap="0.0"/>
+        <!-- Strong collision response for finger tips -->
+        <pair geom1="f1_tip" geom2="f2_tip" condim="6" margin="0.001" gap="0.0" solref="0.001 1" solimp="0.99 0.999 0.001 0.5 2"/>
+        <!-- Strong collision response for finger-cylinder contacts (minimal penetration) -->
+        <pair geom1="f1l1" geom2="cylinder_geom" condim="6" margin="0.001" gap="0.0" solref="0.001 1" solimp="0.99 0.999 0.001 0.5 2"/>
+        <pair geom1="f1l2" geom2="cylinder_geom" condim="6" margin="0.001" gap="0.0" solref="0.001 1" solimp="0.99 0.999 0.001 0.5 2"/>
+        <pair geom1="f1_tip" geom2="cylinder_geom" condim="6" margin="0.001" gap="0.0" solref="0.001 1" solimp="0.99 0.999 0.001 0.5 2"/>
+        <pair geom1="f2l1" geom2="cylinder_geom" condim="6" margin="0.001" gap="0.0" solref="0.001 1" solimp="0.99 0.999 0.001 0.5 2"/>
+        <pair geom1="f2l2" geom2="cylinder_geom" condim="6" margin="0.001" gap="0.0" solref="0.001 1" solimp="0.99 0.999 0.001 0.5 2"/>
+        <pair geom1="f2_tip" geom2="cylinder_geom" condim="6" margin="0.001" gap="0.0" solref="0.001 1" solimp="0.99 0.999 0.001 0.5 2"/>
     </contact>
 
     <worldbody>
@@ -48,14 +54,14 @@
 
         <!-- PALM -©vk©-->
         <body name="mount" pos="0 0 .1" childclass="ezgripper">
-            <geom class="ezgripper_viz" mesh="SAKE_Single_Mount" />
-            <geom type="mesh" mesh="SAKE_Single_Mount"/>
-            <geom pos="0.016 0 0" class="ezgripper_viz" mesh="SAKE_Palm_IM"/>
-            <geom pos="0.016 0 0" type="mesh" mesh="SAKE_Palm_IM" contype="0" conaffinity="0" friction="0.6 0.005 0.0001"/>
+            <!-- <geom class="ezgripper_viz" mesh="SAKE_Single_Mount" /> -->
+            <!-- <geom type="mesh" mesh="SAKE_Single_Mount"/> -->
+            <geom pos="0.016 0 0" class="ezgripper_viz" mesh="SAKE_Palm_IM" rgba="0.8 0.8 0.8 0.5"/>
+            <!-- <geom pos="0.016 0 0" type="mesh" mesh="SAKE_Palm_IM" contype="0" conaffinity="0" friction="0.6 0.005 0.0001"/> -->
             <!-- Palm face collision box for solid contact -->
             <!-- <geom name="palm_face" type="box" size="0.04 0.04 0.01" pos="0.08 0 0" contype="3" conaffinity="3" friction="0.6 0.005 0.0001" rgba="0.5 0.5 0.5 0.3"/> -->
-            <geom name="palm_pulley_f1" type="cylinder" size=".006 0.006" pos="0.07255 0.01 0" class="ezgripper_mech" euler="1.57 0 0"/>
-            <geom name="palm_pulley_f2" type="cylinder" size=".006 0.006" pos="0.07255 -0.01 0" class="ezgripper_mech" euler="1.57 0 0"/>
+            <geom name="palm_pulley_f1" type="cylinder" size=".006 0.006" pos="0.07255 0.01 0" class="ezgripper_mech" euler="0 0 1.57"/>
+            <geom name="palm_pulley_f2" type="cylinder" size=".006 0.006" pos="0.07255 -0.01 0" class="ezgripper_mech" euler="0 0 1.57"/>
             <site name="palm_peg0" pos=".022 0 0" size=".002"/>
             <site name="palm_peg1" pos=".063 0 0" size=".002"/>
             <site name="palm_peg2_f1" pos=".085 0.01 0" size=".002"/>
@@ -71,8 +77,8 @@
             <!-- FINGER1 -©vk©-->
             <body name="F1_L1" pos="0.07255 0.03 0" quat="0.707105 -0.707108 0 0">
                 <joint name="F1_palm_knuckle" pos="0 0 0" axis="0 1 0" range="-1.57075 0.436" stiffness="0.00593" springref="-2.09" damping="0.05" limited="true" margin="0.001"/>
-                <geom class="ezgripper_viz" mesh="SAKE_Finger_L1_IM" rgba="1 1 1 1"/>
-                <geom name="f1l1" type="mesh" mesh="SAKE_Finger_L1_IM" contype="1" conaffinity="1" friction="3.0 0.01 0.0001" rgba="1 1 1 1"/>
+                <geom class="ezgripper_viz" mesh="SAKE_Finger_L1_IM" rgba="0.8 0.8 0.8 0.5"/>
+                <geom name="f1l1" type="mesh" mesh="SAKE_Finger_L1_IM" contype="1" conaffinity="1" friction="3.0 0.01 0.0001" rgba="0.8 0.8 0.8 0.5"/>
                 <!-- Mechanical stops: collision boxes to prevent over-rotation -->
                 <geom name="f1l1_stop_lower" type="box" size="0.008 0.020 0.008" pos="0.015 0 0" contype="1" conaffinity="1" rgba="0.8 0.2 0.2 0.3"/>
                 <geom name="f1l1_stop_upper" type="box" size="0.008 0.020 0.008" pos="-0.010 0 0" contype="1" conaffinity="1" rgba="0.8 0.8 0.2 0.3"/>
@@ -80,20 +86,20 @@
                 <geom name="f1l1_l2stop_zero" type="box" size="0.008 0.015 0.008" pos="0.052 0 -0.008" contype="1" conaffinity="1" rgba="0.2 0.8 0.8 0.3"/>
                 <!-- Mechanical stop for L1-L2 joint at 100° (prevents over-closing) -->
                 <geom name="f1l1_l2stop_max" type="box" size="0.008 0.015 0.008" pos="0.057 0.008 0" contype="1" conaffinity="1" rgba="0.2 0.8 0.8 0.3"/>
-                <geom name="f1l1_pulley" type="cylinder" size=".006 0.006" pos="0.022 -0.003 0" class="ezgripper_mech" euler="1.57 0 0"/>
+                <geom name="f1l1_pulley" type="cylinder" size=".006 0.006" pos="0.022 0 -0.003" class="ezgripper_mech" euler="1.57 0 0"/>
                 <site name="f1l1_pulleyside" pos=".022 0 0.004" size=".002"/>
                 <site name="f1l1_peg0" pos=".01146 0 -0.00676" size=".002"/>
                 <site name="f1l1_peg1" pos=".03545 0 -0.0058" size=".002"/>
 
                 <body name="F1_L2" pos="0.052 0 0">
-                    <joint name="F1_knuckle_tip" pos="0 0 0" axis="0 1 0" range="0 1.745" stiffness="0.00771" springref="-2.09" damping="0.05" limited="true" margin="0.001"/>
+                    <joint name="F1_knuckle_tip" pos="0 0 0" axis="0 1 0" range="0 1.745" stiffness="0.00771" springref="-2.09" damping="0.05" limited="true" margin="0.0" solreflimit="0.001 1" solimplimit="0.99 0.999 0.001 0.5 2"/>
                     <!-- Pulley at L1/L2 joint to keep tendon on correct side (9.255mm diameter) -->
                     <geom name="f1l2_pulley" type="cylinder" size=".0046275 0.006" pos="0 0 0" class="ezgripper_mech" euler="1.57 0 0"/>
                     <site name="f1l2_pulleyside" pos="0 0 0" size=".002"/>
-                    <geom pos="0 0 0" class="ezgripper_viz" mesh="SAKE_Finger_L2_IM" rgba="1 1 1 1"/>
-                    <geom name="f1l2" pos="0 0 0" type="mesh" mesh="SAKE_Finger_L2_IM" contype="1" conaffinity="1" friction="3.0 0.01 0.0001"/>
-                    <geom pos="0.01849 0 0" class="ezgripper_viz" mesh="SAKE_Finger_Pad_IM" rgba=".2 .2 .2 1"/>
-                    <geom name="f1_tip" pos="0.01849 0 0" type="mesh" mesh="SAKE_Finger_Pad_IM" contype="1" conaffinity="1" friction="5.0 0.005 0.0001" rgba=".2 .2 .2 1"/>
+                    <geom pos="0 0 0" class="ezgripper_viz" mesh="SAKE_Finger_L2_IM" rgba="0.8 0.8 0.8 0.5"/>
+                    <geom name="f1l2" pos="0 0 0" type="mesh" mesh="SAKE_Finger_L2_IM" contype="1" conaffinity="1" friction="3.0 0.01 0.0001" rgba="0.8 0.8 0.8 0.5"/>
+                    <geom pos="0.01849 0 0" class="ezgripper_viz" mesh="SAKE_Finger_Pad_IM" rgba="0.8 0.8 0.8 0.5"/>
+                    <geom name="f1_tip" pos="0.01849 0 0" type="mesh" mesh="SAKE_Finger_Pad_IM" contype="1" conaffinity="1" friction="5.0 0.005 0.0001" rgba="0.8 0.8 0.8 0.5"/>
 
                     <site name="f1l2_peg" pos=".01122 0 -.00395" size=".002"/>
                     <site name="f1l2_pin" pos=".01849 0 -0.00025" size=".002"/>
@@ -103,8 +109,8 @@
             <!-- FINGER2 -©vk©-->
             <body name="F2_L1" pos="0.07255 -0.03 0" quat="0.707105 0.707108 0 0">
                 <joint name="F2_palm_knuckle" pos="0 0 0" axis="0 1 0" range="-1.57075 0.436" stiffness="0.00593" springref="-2.09" damping="0.05" limited="true" margin="0.001"/>
-                <geom class="ezgripper_viz" mesh="SAKE_Finger_L1_IM" rgba="1 1 1 1"/>
-                <geom name="f2l1" type="mesh" mesh="SAKE_Finger_L1_IM" contype="1" conaffinity="1" friction="3.0 0.01 0.0001"/>
+                <geom class="ezgripper_viz" mesh="SAKE_Finger_L1_IM" rgba="0.8 0.8 0.8 0.5"/>
+                <geom name="f2l1" type="mesh" mesh="SAKE_Finger_L1_IM" contype="1" conaffinity="1" friction="3.0 0.01 0.0001" rgba="0.8 0.8 0.8 0.5"/>
                 <!-- Mechanical stops: collision boxes to prevent over-rotation -->
                 <geom name="f2l1_stop_lower" type="box" size="0.008 0.020 0.008" pos="0.015 0 0" contype="1" conaffinity="1" rgba="0.8 0.2 0.2 0.3"/>
                 <geom name="f2l1_stop_upper" type="box" size="0.008 0.020 0.008" pos="-0.010 0 0" contype="1" conaffinity="1" rgba="0.8 0.8 0.2 0.3"/>
@@ -112,20 +118,20 @@
                 <geom name="f2l1_l2stop_zero" type="box" size="0.008 0.015 0.008" pos="0.052 0 -0.008" contype="1" conaffinity="1" rgba="0.2 0.8 0.8 0.3"/>
                 <!-- Mechanical stop for L1-L2 joint at 100° (prevents over-closing) -->
                 <geom name="f2l1_l2stop_max" type="box" size="0.008 0.015 0.008" pos="0.057 0.008 0" contype="1" conaffinity="1" rgba="0.2 0.8 0.8 0.3"/>
-                <geom name="f2l1_pulley"  type="cylinder" size=".006 0.006" pos="0.022 -0.003 0" class="ezgripper_mech" euler="1.57 0 0"/>
+                <geom name="f2l1_pulley"  type="cylinder" size=".006 0.006" pos="0.022 0 -0.003" class="ezgripper_mech" euler="1.57 0 0"/>
                 <site name="f2l1_pulleyside" pos=".022 0 0.004" size=".002"/>
                 <site name="f2l1_peg0" pos=".01146 0 -0.00676" size=".002"/>
                 <site name="f2l1_peg1" pos=".03545 0 -0.0058" size=".002"/>
 
                 <body name="F2_L2" pos="0.052 0 0">
-                    <joint name="F2_knuckle_tip" pos="0 0 0" axis="0 1 0" range="0 1.745" stiffness="0.00771" springref="-2.09" damping="0.05" limited="true" margin="0.001"/>
+                    <joint name="F2_knuckle_tip" pos="0 0 0" axis="0 1 0" range="0 1.745" stiffness="0.00771" springref="-2.09" damping="0.05" limited="true" margin="0.0" solreflimit="0.001 1" solimplimit="0.99 0.999 0.001 0.5 2"/>
                     <!-- Pulley at L1/L2 joint to keep tendon on correct side (9.255mm diameter) -->
                     <geom name="f2l2_pulley" type="cylinder" size=".0046275 0.006" pos="0 0 0" class="ezgripper_mech" euler="1.57 0 0"/>
                     <site name="f2l2_pulleyside" pos="0 0 0" size=".002"/>
-                    <geom pos="0 0 0" class="ezgripper_viz" mesh="SAKE_Finger_L2_IM" rgba="1 1 1 1"/>
-                    <geom name="f2l2" pos="0 0 0" type="mesh" mesh="SAKE_Finger_L2_IM" contype="1" conaffinity="1" friction="3.0 0.01 0.0001"/>
-                    <geom pos="0.01849 0 0" class="ezgripper_viz" mesh="SAKE_Finger_Pad_IM" rgba=".2 .2 .2 1"/>
-                    <geom name="f2_tip" pos="0.01849 0 0" type="mesh" mesh="SAKE_Finger_Pad_IM" contype="1" conaffinity="1" friction="5.0 0.005 0.0001" rgba=".2 .2 .2 1"/>
+                    <geom pos="0 0 0" class="ezgripper_viz" mesh="SAKE_Finger_L2_IM" rgba="0.8 0.8 0.8 0.5"/>
+                    <geom name="f2l2" pos="0 0 0" type="mesh" mesh="SAKE_Finger_L2_IM" contype="1" conaffinity="1" friction="3.0 0.01 0.0001" rgba="0.8 0.8 0.8 0.5"/>
+                    <geom pos="0.01849 0 0" class="ezgripper_viz" mesh="SAKE_Finger_Pad_IM" rgba="0.8 0.8 0.8 0.5"/>
+                    <geom name="f2_tip" pos="0.01849 0 0" type="mesh" mesh="SAKE_Finger_Pad_IM" contype="1" conaffinity="1" friction="5.0 0.005 0.0001" rgba="0.8 0.8 0.8 0.5"/>
 
                     <site name="f2l2_peg" pos=".01122 0 -.00395" size=".002"/>
                     <site name="f2l2_pin" pos=".01849 0 -0.00025" size=".002"/>
@@ -133,11 +139,12 @@
             </body>
         </body>
 
-        <!-- VERTICAL CYLINDER PEDESTAL -->
-        <!-- <body name="cylinder_pedestal" pos="0.13 0 0.1">
+        <!-- CYLINDER OBJECT TO GRASP -->
+        <!-- CYLINDER OBJECT TO GRASP - 2.25" diameter, tall enough to go through gripper -->
+        <body name="grasp_cylinder" pos="0.10 0 0.03">
             <freejoint/>
-            <geom name="pedestal" type="cylinder" size="0.0335 0.1" rgba="0.8 0.8 0.1 1" contype="3" conaffinity="3"/>
-        </body> -->
+            <geom name="cylinder_geom" type="cylinder" size="0.0286 0.10" rgba="0.3 0.6 0.8 1" contype="1" conaffinity="1" friction="1.0 0.1 0.01"/>
+        </body>
 
     </worldbody>
 
