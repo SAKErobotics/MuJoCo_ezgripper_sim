@@ -37,9 +37,8 @@ print(f"  - Actuators: {model.nu}")
 print(f"  - Tendons: {model.ntendon}")
 print()
 
-# Get actuator IDs (both fingers controlled identically)
-gripper_f1_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, 'gripper_actuator_f1')
-gripper_f2_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, 'gripper_actuator_f2')
+# Get actuator ID (single actuator controls both fingers via tendon coupling)
+gripper_actuator_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, 'gripper_actuator')
 
 # Demo sequence
 print("Demo Sequence:")
@@ -65,34 +64,28 @@ sim_time = 0.0
 phase_info = {"phase": "open"}
 
 def update_control(model, data, phase_info):
-    """Update gripper control - cycle between max open and max close every 5 seconds"""
+    """Update gripper control - cycle between open and close every 6 seconds"""
     current_time = data.time
     
-    # Calculate cycle: 5 seconds per direction
-    cycle_time = current_time % 10.0  # 10 second total cycle (5s close, 5s open)
+    # Calculate cycle: 6 seconds per direction
+    cycle_time = current_time % 12.0  # 12 second total cycle (6s close, 6s open)
     
-    # Tendon length range: 0.135 (closed) to 0.160 (open)
-    open_length = 0.160   # meters (fully open - extended more)
-    closed_length = 0.135  # meters (fully closed)
-    
-    if cycle_time < 5.0:
-        # Closing phase (0-5 seconds) - gradually decrease tendon length
-        progress = cycle_time / 5.0
-        target_length = open_length - (open_length - closed_length) * progress
-        data.ctrl[gripper_f1_id] = target_length
-        data.ctrl[gripper_f2_id] = target_length
+    if cycle_time < 6.0:
+        # Closing phase (0-6 seconds) - gradually increase closing force
+        progress = cycle_time / 6.0
+        control_force = 1.0 * progress  # 0 to 1.0 (positive = close)
+        data.ctrl[gripper_actuator_id] = control_force
         if phase_info['phase'] != "closing":
             phase_info['phase'] = "closing"
-            print(f"[{current_time:.2f}s] CLOSING (target length: {target_length:.4f}m)")
+            print(f"[{current_time:.2f}s] CLOSING (force: {control_force:.2f})")
     else:
-        # Opening phase (5-10 seconds) - gradually increase tendon length
-        progress = (cycle_time - 5.0) / 5.0
-        target_length = closed_length + (open_length - closed_length) * progress
-        data.ctrl[gripper_f1_id] = target_length
-        data.ctrl[gripper_f2_id] = target_length
+        # Opening phase (6-12 seconds) - negative force to help springs open
+        progress = (cycle_time - 6.0) / 6.0
+        control_force = -0.5 * progress  # 0 to -0.5 (negative = assist opening)
+        data.ctrl[gripper_actuator_id] = control_force
         if phase_info['phase'] != "opening":
             phase_info['phase'] = "opening"
-            print(f"[{current_time:.2f}s] OPENING (target length: {target_length:.4f}m)")
+            print(f"[{current_time:.2f}s] OPENING (force: {control_force:.2f})")
 
 # Launch viewer with custom controller
 print("\n" + "=" * 60)
