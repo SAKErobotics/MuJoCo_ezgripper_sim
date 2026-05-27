@@ -20,24 +20,15 @@ def main():
     # Load base model
     base_model_path = '/home/sake/linorobot2_ws/src/ezgripper_sim/ezgripper.xml'
     
-    # Read the XML and add cylinder
+    # Read the XML and modify existing cylinder
     with open(base_model_path, 'r') as f:
         xml_content = f.read()
     
-    # Insert cylinder before </worldbody>
-    # Cylinder: 2" diameter (0.0254m radius), 15cm tall (0.075m half-height)
-    # Position: X=0.12m (close enough for wrapping, no initial collision), Z=0.075m (half-height, bottom on floor)
-    cylinder_xml = '''
-        <!-- GRASPABLE CYLINDER: 2" diameter, 15cm tall, standing upright -->
-        <body name="cylinder" pos="0.12 0 0.075">
-            <freejoint/>
-            <geom name="cylinder_body" type="cylinder" size="0.0254 0.075" 
-                  rgba="0.8 0.3 0.1 1" mass="0.12"
-                  contype="1" conaffinity="1" friction="2.0 0.005 0.0001"/>
-        </body>
-'''
-    
-    xml_content = xml_content.replace('</worldbody>', cylinder_xml + '\n    </worldbody>')
+    # Modify the existing cylinder to be blue and free-moving
+    xml_content = xml_content.replace(
+        '        <body name="grasp_cylinder" pos="0.15 0 0.10">\n            <geom name="cylinder_geom" type="cylinder" size="0.0286 0.10" rgba="0.3 0.6 0.8 1" contype="1" conaffinity="1" friction="1.0 0.1 0.01"/>',
+        '        <body name="grasp_cylinder" pos="0.12 0 0.075">\n            <freejoint/>\n            <geom name="cylinder_geom" type="cylinder" size="0.0254 0.075" rgba="0.1 0.3 0.8 1" mass="0.12" contype="1" conaffinity="1" friction="2.0 0.005 0.0001"/>'
+    )
     
     # Load modified model
     model = mujoco.MjModel.from_xml_string(xml_content)
@@ -96,6 +87,48 @@ def main():
             
             # Phase 3: Hold grasp
             elif phase == "HOLDING":
+                data.ctrl[act_id] = control
+                if step == 29999:
+                    phase = "REOPENING"
+                    print("\n" + "="*70)
+                    print("PHASE 4: REOPENING - Opening gripper")
+                    print("="*70)
+            
+            # Phase 4: Reopen
+            elif phase == "REOPENING" and step < 34000:
+                if step % 50 == 0 and control > 0.0:
+                    control -= 0.01  # Decrease force to open
+                data.ctrl[act_id] = control
+                if step == 33999:
+                    phase = "SECOND_CLOSE"
+                    print("\n" + "="*70)
+                    print("PHASE 5: SECOND CLOSE - Grasping again")
+                    print("="*70)
+            
+            # Phase 5: Second close
+            elif phase == "SECOND_CLOSE" and step < 44000:
+                if step % 50 == 0 and control < 2.0:
+                    control += 0.01  # Increase force to close
+                data.ctrl[act_id] = control
+                if step == 43999:
+                    phase = "FINAL_HOLD"
+                    print("\n" + "="*70)
+                    print("PHASE 6: FINAL HOLD - Maintaining second grasp")
+                    print("="*70)
+            
+            # Phase 6: Final hold
+            elif phase == "FINAL_HOLD":
+                data.ctrl[act_id] = control
+                if step == 47999:
+                    phase = "FINAL_OPEN"
+                    print("\n" + "="*70)
+                    print("PHASE 7: FINAL OPEN - Opening completely")
+                    print("="*70)
+            
+            # Phase 7: Final open
+            elif phase == "FINAL_OPEN" and step < 52000:
+                if step % 50 == 0 and control > 0.0:
+                    control -= 0.01  # Decrease force to open
                 data.ctrl[act_id] = control
             
             mujoco.mj_step(model, data)
